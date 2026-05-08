@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "PétanqueCoach",
+    "slug": "petanque-coach",
+    "version": "1.0.0",
+    "orientation": "default",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0d1117"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#0d1117"
+      },
+      "package": "de.petanque.coach",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_IMAGES"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "PétanqueCoach benötigt Kamerazugriff für Videoaufnahmen"
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "PétanqueCoach benötigt Zugriff auf Videos",
+          "savePhotosPermission": "PétanqueCoach möchte Videos speichern",
+          "isAccessMediaLocationEnabled": true
+        }
+      ]
+    ],
+    "icon": "./assets/icon.png",
+    "extra": {
+      "eas": {
+        "projectId": "0f38f1b4-dd8a-4d22-af47-ea54b9d5ec5c"
+      }
+    }
+  }
+}
