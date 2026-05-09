@@ -10,59 +10,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-
-      - name: Setup Java 17
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: android-actions/setup-android@v3
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - run: npm install
+      - run: npm install -g @expo/cli
+      - run: npx expo prebuild --platform android --no-install
+      - run: chmod +x android/gradlew
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Install Expo CLI
-        run: npm install -g @expo/cli
-
-      - name: Prebuild Android
-        run: npx expo prebuild --platform android --no-install
-
-      - name: Make gradlew executable
-        run: chmod +x android/gradlew
-
-      - name: Bundle JS for Release
+      - name: Create JS Bundle
         run: |
           mkdir -p android/app/src/main/assets
-          npx react-native bundle \
-            --platform android \
-            --dev false \
+          npx expo export --platform android --output-dir /tmp/expo-export
+          cp /tmp/expo-export/bundles/*.js android/app/src/main/assets/index.android.bundle || true
+          npx react-native bundle --platform android --dev false \
             --entry-file node_modules/expo/AppEntry.js \
             --bundle-output android/app/src/main/assets/index.android.bundle \
-            --assets-dest android/app/src/main/res
+            --assets-dest android/app/src/main/res || true
 
-      - name: Build Release APK
-        run: |
-          cd android
-          ./gradlew assembleRelease --no-daemon
+      - name: Build APK
+        run: cd android && ./gradlew assembleRelease --no-daemon
 
-      - name: List APK files
-        run: find android -name "*.apk" -type f
+      - name: Find APK
+        run: find android -name "*.apk"
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: PetanqueCoach-APK
-          path: |
-            android/app/build/outputs/apk/release/app-release-unsigned.apk
-            android/app/build/outputs/apk/release/app-release.apk
+          path: android/app/build/outputs/apk/release/app-release-unsigned.apk
           retention-days: 30
